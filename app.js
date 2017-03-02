@@ -13,6 +13,9 @@
 
 'use strict';
 
+var poetry = require('./poetry');
+
+
 process.env.DEBUG = 'actions-on-google:*';
 let Assistant = require('actions-on-google').ApiAiAssistant;
 let express = require('express');
@@ -22,6 +25,7 @@ let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
 
 const TEST_ACTION = 'test_action';
+const RHYME_ACTION = 'rhymes_with';
 const WELCOME_ACTION = 'welcome_action';
 const CORRECT_WELCOME_ACTION = 'correct_welcome_action';
 const PARSE_ACTION = 'parse_action';
@@ -70,6 +74,21 @@ app.post('/', function (req, res) {
     assistant.ask(SECONDARY_WELCOME);
   }
 
+  function rhymeResponse(assistant){
+   // assistant.tell("I'm so cool, I rhyme all the time");
+      var word = assistant.getArgument("word_to_rhyme");
+      console.log(word);
+      poetry.rhyme(word, function(e){
+        if(e.length == 0){
+          assistant.tell('<speak>Are you trying to be funny? Because nothing rhymes with '+ word+ '.<break time="3s" />  NOTHING!</speak>');
+           // assistant.tell('<speak>Step 1, take a deep breath. <break time="2s" />Step 2, exhale. </speak>');
+        } else if(e.length == 1) {
+          assistant.tell("there's only one word that rhymes with "+word + ". and that is " + e);
+        }
+        assistant.tell("There are a bunch of words that rhyme with " + word + " like " + e);
+      });
+  }
+
   //  Figure out which type of block the writer's suffering
   function identifyType(assistant) {
     //  See if we need a rhyme or general inspiration
@@ -88,6 +107,7 @@ app.post('/', function (req, res) {
   let actionMap = new Map();
   actionMap.set(TEST_ACTION, testResponse);
   actionMap.set(WELCOME_ACTION, welcome);
+  actionMap.set(RHYME_ACTION, rhymeResponse);
   actionMap.set(PARSE_ACTION, identifyType);
   actionMap.set(CORRECT_WELCOME_ACTION, correctWelcome);
 
@@ -101,6 +121,9 @@ if (module === require.main) {
   let server = app.listen(process.env.PORT || 8080, function () {
     let port = server.address().port;
     console.log('App listening on port %s', port);
+
+
+
   });
   // [END server]
 }
