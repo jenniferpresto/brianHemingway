@@ -94,6 +94,7 @@ app.post('/', function (req, res) {
   function identifyType(assistant) {
     //  See if we need a rhyme or general inspiration
     if (assistant.getArgument('block_type') == 'rhyme') {
+      assistant.setContext('seeking_rhymes');
       assistant.ask('Dude, you just need a push in the right direction for a rhyme! Just let me know what word you\'re trying to rhyme');
     } else if (assistant.getArgument('block_type') == 'general') {
       // assistant.setContext('getting_genre');
