@@ -20,6 +20,7 @@
     "actions-on-google": "^1.0.0"
   },
   "devDependencies": {
+    "request": "^2.79.0",
     "semistandard": "^9.1.0"
   }
 }

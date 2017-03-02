@@ -13,6 +13,9 @@
 
 'use strict';
 
+var poetry = require('./poetry');
+
+
 process.env.DEBUG = 'actions-on-google:*';
 let Assistant = require('actions-on-google').ApiAiAssistant;
 let express = require('express');
@@ -77,6 +80,11 @@ if (module === require.main) {
   let server = app.listen(process.env.PORT || 8080, function () {
     let port = server.address().port;
     console.log('App listening on port %s', port);
+
+   poetry.rhyme("cat", function(e){
+     console.log("RHYMES WITH cat: " + e);
+   });
+
   });
   // [END server]
 }
