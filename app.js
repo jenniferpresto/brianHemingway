@@ -23,17 +23,17 @@ app.use(bodyParser.json({type: 'application/json'}));
 
 const TEST_ACTION = 'test_action';
 const WELCOME_ACTION = 'welcome_action';
-const NAME_ACTION = 'make_name';
-const COLOR_ARGUMENT = 'color';
-const NUMBER_ARGUMENT = 'number';
-
+const PARSE_ACTION = 'parse_action';
 //  Save the array of welcome messages;
 //  The first one will return a special context
 let Welcomes = [];
-Welcomes.push('Hey, oh... duh... nah, I\'m not busy. Come on in!');
-Welcomes.push('Hey, I\'m Brian... I hear you\'re having trouble writing. What can I help you with\?');
-Welcomes.push('Hey, dude... I\'m Brian... are you having trouble with your writing? Hit me up... hwat are you trying to do?');
-Welcomes.push('This is the third welcome');
+Welcomes.push("Hey, there, come on in!");
+//Welcomes.push('<speak>Hey, dude. <break time="1s" /> Oh. <break time="1s" /> Nah, I\'m not busy.<break time="1s" /> Come on in!</speak>');
+// Welcomes.push('Hey, I\'m Brian... I hear you\'re having trouble writing. What can I help you with\?');
+// Welcomes.push('Hey, dude... I\'m Brian... are you having trouble with your writing? Hit me up... hwat are you trying to do?');
+// Welcomes.push('Hey, dude, this is the fourth welcome');
+
+const SECONDARY_WELCOME = 'Oh, whoa, sorry... I totally forgot I was in here. Ok, so, what can I help you with?';
 
 // [START SillyNameMaker]
 app.post('/', function (req, res) {
@@ -51,9 +51,21 @@ app.post('/', function (req, res) {
   }
 
   function welcome(assistant) {
-    let randomWelcome = Math.floor((Math.random() * Welcomes.length) + 1);
-    console.log('Random number for the welcome is' + randomWelcome);
-    assistant.tell(Welcomes[randomWelcome]);
+    let welcomeIdx = Math.floor((Math.random() * Welcomes.length));
+    console.log('Random number for the welcome is' + welcomeIdx);
+
+    //  If Brian is confused and invites you in, set context appropriately
+    if (welcomeIdx == 0) {
+      console.log('hey, it\'s the beginning');
+      assistant.setContext('confused_welcome');
+    }
+    assistant.ask(Welcomes[welcomeIdx]);
+  }
+
+  //  Figure out which type of block the writer's suffering
+  function identifyType(assistant) {
+    console.log(assistant.data);
+    assistant.tell('Awesome, I have that type');
   }
 
   function testResponse(assistant) {
@@ -63,9 +75,9 @@ app.post('/', function (req, res) {
 
 
   let actionMap = new Map();
-  actionMap.set(NAME_ACTION, makeName);
   actionMap.set(TEST_ACTION, testResponse);
   actionMap.set(WELCOME_ACTION, welcome);
+  actionMap.set(PARSE_ACTION, identifyType);
 
   assistant.handleRequest(actionMap);
 });
