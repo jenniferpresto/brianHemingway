@@ -64,7 +64,8 @@ app.post('/', function (req, res) {
     if (welcomeIdx == 0) {
       console.log('hey, it\'s the beginning');
       assistant.setContext('confused_welcome');
-
+    } else {
+      assistant.setContext('successfully_welcomed');
     }
     assistant.ask(Welcomes[welcomeIdx]);
   }
