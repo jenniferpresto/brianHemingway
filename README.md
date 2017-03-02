@@ -1,4 +1,7 @@
-# Actions on Google Silly Name Maker Sample using Node.js
+# Brian Hemingway Chill, Inspiring Guy
+
+Based on Actions on Google Silly Name Maker Sample using Node.js:
+Following from repo [here](https://github.com/actions-on-google/apiai-silly-name-maker-webhook-nodejs).
 
 This is a super simple Action, built using API.AI and Node.js, to generate a
 silly name based on your lucky number and favorite color.
