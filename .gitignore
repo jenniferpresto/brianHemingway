@@ -1,5 +1,6 @@
-# Node packages
+# Node stuff
 node_modules/*
+npm-debug.log
 
 # JetBrains IDE project files
 .idea
