@@ -70,6 +70,7 @@ app.post('/', function (req, res) {
   }
 
   function correctWelcome(assistant) {
+    assistant.setContext('successfully_welcomed');
     assistant.ask(SECONDARY_WELCOME);
   }
 
