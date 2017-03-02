@@ -25,6 +25,7 @@ let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
 
 const TEST_ACTION = 'test_action';
+const RHYME_ACTION = 'rhymes_with';
 const WELCOME_ACTION = 'welcome_action';
 const NAME_ACTION = 'make_name';
 const COLOR_ARGUMENT = 'color';
@@ -63,12 +64,28 @@ app.post('/', function (req, res) {
     assistant.tell('I\'m trying to get some sweet rhymes for you, and I\'m totally on the backend.');
   }
 
+  function rhymeResponse(assistant){
+   // assistant.tell("I'm so cool, I rhyme all the time");
+      var word = assistant.getArgument("word_to_rhyme");
+console.log(word);
+      poetry.rhyme(word, function(e){
+        if(e.length == 0){
+          assistant.tell('<speak>Are you trying to be funny? Because nothing rhymes with '+ word+ '.<break time="3s" />  NOTHING!</speak>');
+           // assistant.tell('<speak>Step 1, take a deep breath. <break time="2s" />Step 2, exhale. </speak>');
+        } else if(e.length == 1) {
+          assistant.tell("there's only one word that rhymes with "+word + ". and that is " + e);
+        }
+        assistant.tell("There are a bunch of words that rhyme with " + word + " like " + e);
+      });
+  }
+
 
 
   let actionMap = new Map();
   actionMap.set(NAME_ACTION, makeName);
   actionMap.set(TEST_ACTION, testResponse);
   actionMap.set(WELCOME_ACTION, welcome);
+  actionMap.set(RHYME_ACTION, rhymeResponse);
 
   assistant.handleRequest(actionMap);
 });
@@ -81,9 +98,7 @@ if (module === require.main) {
     let port = server.address().port;
     console.log('App listening on port %s', port);
 
-   poetry.rhyme("cat", function(e){
-     console.log("RHYMES WITH cat: " + e);
-   });
+
 
   });
   // [END server]
