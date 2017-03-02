@@ -23,7 +23,9 @@ app.use(bodyParser.json({type: 'application/json'}));
 
 const TEST_ACTION = 'test_action';
 const WELCOME_ACTION = 'welcome_action';
+const CORRECT_WELCOME_ACTION = 'correct_welcome_action';
 const PARSE_ACTION = 'parse_action';
+
 //  Save the array of welcome messages;
 //  The first one will return a special context
 let Welcomes = [];
@@ -33,7 +35,7 @@ Welcomes.push("Hey, there, come on in!");
 // Welcomes.push('Hey, dude... I\'m Brian... are you having trouble with your writing? Hit me up... hwat are you trying to do?');
 // Welcomes.push('Hey, dude, this is the fourth welcome');
 
-const SECONDARY_WELCOME = 'Oh, whoa, sorry... I totally forgot I was in here. Ok, so, what can I help you with?';
+const SECONDARY_WELCOME = 'Oh, whoa, sorry... I totally forgot I was in here. Ok, so, what can I help you with? Do you need some rhymes or just general inspiration?';
 
 // [START SillyNameMaker]
 app.post('/', function (req, res) {
@@ -41,14 +43,14 @@ app.post('/', function (req, res) {
   console.log('Request headers: ' + JSON.stringify(req.headers));
   console.log('Request body: ' + JSON.stringify(req.body));
 
-  // Make a silly name
-  function makeName (assistant) {
-    let number = assistant.getArgument(NUMBER_ARGUMENT);
-    let color = assistant.getArgument(COLOR_ARGUMENT);
-    assistant.tell('Alright, your silly name is ' +
-      color + ' ' + number +
-      '! I hope you like it. See you next time.');
-  }
+  // // Make a silly name
+  // function makeName (assistant) {
+  //   let number = assistant.getArgument(NUMBER_ARGUMENT);
+  //   let color = assistant.getArgument(COLOR_ARGUMENT);
+  //   assistant.tell('Alright, your silly name is ' +
+  //     color + ' ' + number +
+  //     '! I hope you like it. See you next time.');
+  // }
 
   function welcome(assistant) {
     let welcomeIdx = Math.floor((Math.random() * Welcomes.length));
@@ -58,31 +60,35 @@ app.post('/', function (req, res) {
     if (welcomeIdx == 0) {
       console.log('hey, it\'s the beginning');
       assistant.setContext('confused_welcome');
+
     }
     assistant.ask(Welcomes[welcomeIdx]);
+  }
+
+  function correctWelcome(assistant) {
+    assistant.ask(SECONDARY_WELCOME);
   }
 
   //  Figure out which type of block the writer's suffering
   function identifyType(assistant) {
     //  See if we need a rhyme or general inspiration
     if (assistant.getArgument('block_type') == 'rhyme') {
-      assistant.tell('dude, you\'re looking for a rhyme!');
+      assistant.ask('Dude, you just need a push in the right direction for a rhyme! Just let me know what word you\'re trying to rhyme');
     } else if (assistant.getArgument('block_type') == 'general') {
-      assistant.tell('dude, I can totally hook you up with some general inspiration');
+      // assistant.setContext('getting_genre');
+      assistant.ask('dude, I can totally hook you up with some general inspiration. Let me know if you what kind of thing you\'re writing.');
     }
-    assistant.tell('Awesome, I have that type');
   }
 
   function testResponse(assistant) {
     assistant.tell('I\'m trying to get some sweet rhymes for you, and I\'m totally on the backend.');
   }
 
-
-
   let actionMap = new Map();
   actionMap.set(TEST_ACTION, testResponse);
   actionMap.set(WELCOME_ACTION, welcome);
   actionMap.set(PARSE_ACTION, identifyType);
+  actionMap.set(CORRECT_WELCOME_ACTION, correctWelcome);
 
   assistant.handleRequest(actionMap);
 });
