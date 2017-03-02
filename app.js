@@ -64,7 +64,12 @@ app.post('/', function (req, res) {
 
   //  Figure out which type of block the writer's suffering
   function identifyType(assistant) {
-    console.log(assistant.data);
+    //  See if we need a rhyme or general inspiration
+    if (assistant.getArgument('block_type') == 'rhyme') {
+      assistant.tell('dude, you\'re looking for a rhyme!');
+    } else if (assistant.getArgument('block_type') == 'general') {
+      assistant.tell('dude, I can totally hook you up with some general inspiration');
+    }
     assistant.tell('Awesome, I have that type');
   }
 
