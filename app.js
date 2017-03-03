@@ -65,11 +65,13 @@ app.post('/', function (req, res) {
   function welcome(assistant) {
     let welcomeIdx = Math.floor((Math.random() * Welcomes.length));
     console.log('Random number for the welcome is' + welcomeIdx);
+    console.log(assistant.getContexts());
 
     //  If Brian is confused and invites you in, set context appropriately
     if (welcomeIdx == 0) {
-      console.log('hey, it\'s the beginning');
       assistant.setContext('confused_welcome');
+      console.log('**************************just set to confused');
+      console.log(assistant.getContexts());
     } else {
       assistant.setContext('successfully_welcomed');
     }
