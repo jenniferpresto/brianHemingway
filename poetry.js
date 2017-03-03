@@ -4,7 +4,9 @@ module.exports = {
 
     rhyme: function (_word, _maxCount, callback) {
 
-        request('http://rhymebrain.com/talk?function=getRhymes&word=' + _word, function (error, response, body) {
+        var word = _word.toLowerCase();
+
+        request('http://rhymebrain.com/talk?function=getRhymes&word=' + word, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var mRhymes = JSON.parse(body);
                 var mGoodRhymes = [];
