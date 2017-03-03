@@ -24,11 +24,26 @@ let bodyParser = require('body-parser');
 let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
 
-const TEST_ACTION = 'test_action';
+//const TEST_ACTION = 'test_action';
 const RHYME_ACTION = 'rhymes_with';
 const WELCOME_ACTION = 'welcome_action';
 const CORRECT_WELCOME_ACTION = 'correct_welcome_action';
 const PARSE_ACTION = 'parse_action';
+const GET_PLOT_ACTION = 'get_plot_line';
+
+let MYSTERY_PLOTLINES = [];
+let COMEDY_PLOTLINES = [];
+let ROMANCE_PLOTLINES = [];
+
+MYSTERY_PLOTLINES.push("The story is about a barbarian in possession of stolen technology. It starts in a large city in South America. The effect of globalization on culture plays a major role in this story.");
+MYSTERY_PLOTLINES.push("The story begins at a business meeting where a secret recording has been made by your main character. It's a story about a life or death decision and your character is not afraid to get involved.");
+MYSTERY_PLOTLINES.push("Your main character is a woman in her late thirties, who is very reckless. The story begins on a mountain top. Your character sees something she wasn't meant to see.");
+COMEDY_PLOTLINES.push("A bohemian prophet, an insignificant cinematographer, and a conservative patient get completely trashed in a football stadium, chaos ensues.");
+COMEDY_PLOTLINES.push("This is a story of a washed-up super hero, who overcomes a fear of flying when zombies attack Wall Street.");
+COMEDY_PLOTLINES.push("This is a fish-out-of-water story with a focus on wandering. The story is about an unambitious alchemist and takes place in a magical part of our universe.");
+ROMANCE_PLOTLINES.push("This story is about a traveler who is in love with a wily smuggler. It takes place in a small city on a war-torn planet. The future of peacemaking is a major part of this story.");
+ROMANCE_PLOTLINES.push("This is an epic about the need of intimacy versus the need for independence. The story begins with someone moving to a new dwelling, climaxes with the discovery of a long-lost friend, and ends with a journey.");
+ROMANCE_PLOTLINES.push("This is a dark romance with a focus on the need for change and growth. The story is about a librarian who was once married to a bitter talk show host. The story starts with the revelation of a secret that puts lives at risk.");
 
 //  Save the array of welcome messages;
 //  The first one will return a special context
@@ -46,15 +61,6 @@ app.post('/', function (req, res) {
   const assistant = new Assistant({request: req, response: res});
   console.log('Request headers: ' + JSON.stringify(req.headers));
   console.log('Request body: ' + JSON.stringify(req.body));
-
-  // // Make a silly name
-  // function makeName (assistant) {
-  //   let number = assistant.getArgument(NUMBER_ARGUMENT);
-  //   let color = assistant.getArgument(COLOR_ARGUMENT);
-  //   assistant.tell('Alright, your silly name is ' +
-  //     color + ' ' + number +
-  //     '! I hope you like it. See you next time.');
-  // }
 
   function welcome(assistant) {
     let welcomeIdx = Math.floor((Math.random() * Welcomes.length));
@@ -81,12 +87,11 @@ app.post('/', function (req, res) {
       console.log(word);
       poetry.rhyme(word, function(e){
         if(e.length == 0){
-          assistant.tell('<speak>Are you trying to be funny? Because nothing rhymes with '+ word+ '.<break time="3s" />  NOTHING!</speak>');
-           // assistant.tell('<speak>Step 1, take a deep breath. <break time="2s" />Step 2, exhale. </speak>');
+          assistant.ask('<speak>Are you trying to be funny? Because nothing rhymes with '+ word+ '.<break time="3s" />  NOTHING!</speak>');
         } else if(e.length == 1) {
-          assistant.tell("there's only one word that rhymes with "+word + ". and that is " + e);
+          assistant.ask("there's only one word that rhymes with "+word + ". and that is " + e);
         }
-        assistant.tell("There are a bunch of words that rhyme with " + word + " like " + e);
+        assistant.ask("There are a bunch of words that rhyme with " + word + " like " + e);
       });
   }
 
@@ -98,20 +103,52 @@ app.post('/', function (req, res) {
       assistant.ask('Dude, you just need a push in the right direction for a rhyme! Just let me know what word you\'re trying to rhyme');
     } else if (assistant.getArgument('block_type') == 'general') {
       // assistant.setContext('getting_genre');
-      assistant.ask('dude, I can totally hook you up with some general inspiration. Let me know if you what kind of thing you\'re writing.');
+      assistant.setContext('seeking_genre');
+      assistant.ask('Hey, I feel you. I was having trouble with my meta fiction piece last night. Why don\'t I throw out a single plot line for you to play around with? What kind of genre are you writing?');
     }
   }
 
-  function testResponse(assistant) {
-    assistant.tell('I\'m trying to get some sweet rhymes for you, and I\'m totally on the backend.');
+  //  Return a plot line
+  function getPlotLine(assistant) {
+    let genre = assistant.getArgument('genre');
+    let rand = Math.floor((Math.random() * 3)); // random number between 0 and 2
+    let plotLine = "";
+    let genreNum = 0;
+    console.log("*****************************GETPLOTLINE");
+    console.log("Genre is " + genre);
+    if (genre === "mystery") {
+      genreNum = 0;
+    } else if (genre === "comedy") {
+      genreNum = 1;
+    } else if (genre === "romance") {
+      genreNum = 2;
+    }
+    switch (genreNum) {
+      case 0:
+        assistant.ask("Just try writing a page with this: "  + MYSTERY_PLOTLINES[rand]);
+        break;
+      case 1:
+        assistant.ask("Just try writing a page with this: "  + COMEDY_PLOTLINES[rand]);
+        break;
+      case 2:
+        assistant.ask("Just try writing a page with this: "  + ROMANCE_PLOTLINES[rand]);
+        break;
+      default:
+        break;
+    }
   }
 
+  // function testResponse(assistant) {
+  //   assistant.tell('I\'m trying to get some sweet rhymes for you, and I\'m totally on the backend.');
+  // }
+
   let actionMap = new Map();
-  actionMap.set(TEST_ACTION, testResponse);
+  // actionMap.set(TEST_ACTION, testResponse);
   actionMap.set(WELCOME_ACTION, welcome);
   actionMap.set(RHYME_ACTION, rhymeResponse);
   actionMap.set(PARSE_ACTION, identifyType);
   actionMap.set(CORRECT_WELCOME_ACTION, correctWelcome);
+  actionMap.set(GET_PLOT_ACTION, getPlotLine);
 
   assistant.handleRequest(actionMap);
 });
