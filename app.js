@@ -85,7 +85,7 @@ app.post('/', function (req, res) {
    // assistant.tell("I'm so cool, I rhyme all the time");
       var word = assistant.getArgument("word_to_rhyme");
       console.log(word);
-      poetry.rhyme(word, function(e){
+      poetry.rhyme(word, 4, function(e){
         if(e.length == 0){
           assistant.ask('<speak>Are you trying to be funny? Because nothing rhymes with '+ word+ '.<break time="3s" />  NOTHING!</speak>');
         } else if(e.length == 1) {
